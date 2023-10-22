@@ -1,6 +1,8 @@
 name: deploy_dev
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
   manual_deploy:
     runs-on: dev-server
