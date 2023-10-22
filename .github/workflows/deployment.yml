@@ -1,0 +1,17 @@
+name: deploy_dev
+on:
+  workflow_dispatch:
+jobs:
+  manual_deploy:
+    runs-on: dev-server
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Build the Node.js API and create a ‘ .tgz ‘ or similar achive.
+        run: zip -r /root/nodejs-api-bkp-$(date +%Y-%m-%d-%H-%M).zip /root/vretta
+      - name: upload backup to s3
+        run: aws s3 cp /root/nodejs-api-bkp-$(date +%Y-%m-%d-%H-%M).zip s3://nodejs-backup-bucket/nodejs-api-bkp-$(date +%Y-%m-%d-%H-%M).zip
+      - run: git -C /root/vretta pull origin main
+      - run: npm install
+      - run: pm2 restart nodejs_api
+        env:
+          CI: true
